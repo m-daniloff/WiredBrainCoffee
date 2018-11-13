@@ -2,6 +2,9 @@
 {
     public class AppSettings
 	{
-	    public static readonly string ConnectionString = "PASTE KEY HERE";
+		public static readonly string ConnectionString = "PASTE KEY HERE";
+
+		// Emulator
+		//= "UseDevelopmentStorage=true";
 	}
 }
