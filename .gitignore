@@ -29,6 +29,7 @@
 *.sdf
 *.opensdf
 *db.lock
+*.ide
 
 # Special Files
 *~
