@@ -8,7 +8,8 @@ namespace WiredBrainCoffee.AdminApp.ViewModel
 {
   public class MainViewModel : ViewModelBase
   {
-    private bool _isLoading;
+      private string _prefix;
+        private bool _isLoading;
     private string _loadingMessage;
     private readonly ICoffeeVideoStorage _coffeeVideoStorage;
     private readonly IAddCoffeeVideoDialogService _addCoffeeVideoDialogService;
@@ -45,7 +46,17 @@ namespace WiredBrainCoffee.AdminApp.ViewModel
       }
     }
 
-    public ObservableCollection<CoffeeVideoViewModel> CoffeeVideos { get; }
+      public string Prefix
+      {
+          get { return _prefix; }
+          set
+          {
+              _prefix = value;
+              OnPropertyChanged();
+          }
+      }
+
+        public ObservableCollection<CoffeeVideoViewModel> CoffeeVideos { get; }
 
     public CoffeeVideoViewModel SelectedCoffeeVideo
     {
@@ -104,5 +115,28 @@ namespace WiredBrainCoffee.AdminApp.ViewModel
       IsLoading = false;
       LoadingMessage = null;
     }
+
+      public async Task LoadCoffeeVideosAsync()
+      {
+          StartLoading("We're loading the videos for you");
+          try
+          {
+              var cloudBlockBlobs = await _coffeeVideoStorage.ListVideoBlobsAsync(Prefix);
+              CoffeeVideos.Clear();
+              foreach (var cloudBlockBlob in cloudBlockBlobs)
+              {
+                  CoffeeVideos.Add(new CoffeeVideoViewModel(cloudBlockBlob));
+              }
+          }
+          catch (Exception e)
+          {
+              await _messageDialogService.ShowInfoDialogAsync(e.Message, "Error");
+          }
+          finally
+          {
+                StopLoading();
+          }
+            
+      }
   }
 }
