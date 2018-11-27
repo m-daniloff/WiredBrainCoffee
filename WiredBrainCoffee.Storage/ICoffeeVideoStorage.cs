@@ -14,5 +14,9 @@ namespace WiredBrainCoffee.Storage
 
 		Task DownloadVideoAsync(CloudBlockBlob cloudBlockBlob, Stream targetStream);
 		Task DeleteVideoAsync(CloudBlockBlob cloudBlockBlob);
-	}
+
+        Task UpdateMetadataAsync(CloudBlockBlob cloudBlockBlob, string title, string description);
+        Task ReloadMetadataAsync(CloudBlockBlob cloudBlockBlob);
+        (string title, string description) GetBlobMetadata(CloudBlockBlob cloudBlockBlob);
+    }
 }

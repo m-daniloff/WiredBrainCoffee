@@ -11,8 +11,10 @@ namespace WiredBrainCoffee.Storage
 	{
 		private readonly string _containerNameVideos = "videos";
 		private readonly string _connectionString;
+	    private readonly string _metadataKeyTitle = "title";
+	    private readonly string _metadataKeyDescription = "description";
 
-		public CoffeeVideoStorage(string connectionString)
+        public CoffeeVideoStorage(string connectionString)
 		{
 			_connectionString = connectionString;
 		}
@@ -67,7 +69,28 @@ namespace WiredBrainCoffee.Storage
 			await cloudBlockBlob.DeleteAsync();
 		}
 
-		private async Task<CloudBlobContainer> GetCoffeeVideosContainerAsync()
+	    public async Task UpdateMetadataAsync(
+	        CloudBlockBlob cloudBlockBlob, string title, string description)
+	    {
+	        // TODO: Store title and description as metadata on the Blob
+	    }
+
+	    public async Task ReloadMetadataAsync(CloudBlockBlob cloudBlockBlob)
+	    {
+	        await cloudBlockBlob.FetchAttributesAsync();
+	    }
+
+	    public (string title, string description) GetBlobMetadata(CloudBlockBlob cloudBlockBlob)
+	    {
+	        return (cloudBlockBlob.Metadata.ContainsKey(_metadataKeyTitle)
+	                ? cloudBlockBlob.Metadata[_metadataKeyTitle]
+	                : "",
+	            cloudBlockBlob.Metadata.ContainsKey(_metadataKeyDescription)
+	                ? cloudBlockBlob.Metadata[_metadataKeyDescription]
+	                : "");
+	    }
+
+        private async Task<CloudBlobContainer> GetCoffeeVideosContainerAsync()
 		{
 			var cloudStorageAccount = CloudStorageAccount.Parse(_connectionString);
 
