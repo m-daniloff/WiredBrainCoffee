@@ -7,7 +7,7 @@ namespace WiredBrainCoffee.Storage
 {
     public interface ICoffeeVideoStorage
     {
-		Task<CloudBlockBlob> UploadVideoAsync(byte[] videoByteArray, string blobname);
+		Task<CloudBlockBlob> UploadVideoAsync(byte[] videoByteArray, string blobname, string title, string description);
 		Task<bool> CheckIfBlobExistsAsync(string blobName);
 
 		Task<IEnumerable<CloudBlockBlob>> ListVideoBlobsAsync(string prefix = null);

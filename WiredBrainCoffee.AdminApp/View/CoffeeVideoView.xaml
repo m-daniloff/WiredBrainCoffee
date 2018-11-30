@@ -41,7 +41,7 @@
 			<MediaElement AutoPlay="False" Source="{x:Bind ViewModel.BlobUri,Mode=OneWay}"
                                 AreTransportControlsEnabled="True" IsMuted="True"/>
 		</Border>
-	    <Border Grid.Row="4" Background="#333333" Margin="10">
+	    <Border Grid.Row="4" Background="LightBlue" Margin="10">
 	        <Grid >
 	            <Grid.ColumnDefinitions>
 	                <ColumnDefinition Width="Auto"/>

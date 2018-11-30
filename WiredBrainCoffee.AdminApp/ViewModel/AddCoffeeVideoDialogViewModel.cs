@@ -13,7 +13,10 @@ namespace WiredBrainCoffee.AdminApp.ViewModel
     bool DialogResultIsOk { get; }
     byte[] BlobByteArray { get; }
     string BlobName { get; }
-  }
+
+      string BlobTitle { get; }
+      string BlobDescription { get; }
+    }
   public class AddCoffeeVideoDialogViewModel : ViewModelBase, IAddCoffeeVideoDialogViewModel
   {
     private string _blobNameWithoutExtension;
@@ -47,7 +50,12 @@ namespace WiredBrainCoffee.AdminApp.ViewModel
 
     public string BlobName => BlobNameWithoutExtension + ".mp4";
 
-    public bool DialogResultIsOk { get; set; }
+      public string BlobTitle { get; set; }
+
+      public string BlobDescription { get; set; }
+
+
+      public bool DialogResultIsOk { get; set; }
 
     public async Task SelectVideoAsync()
     {

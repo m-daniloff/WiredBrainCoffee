@@ -53,9 +53,23 @@
                 </Button>
             </StackPanel>
 
-            <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.CoffeeVideos}"
-                            SelectedItem="{x:Bind ViewModel.SelectedCoffeeVideo,Mode=TwoWay}"
-                            DisplayMemberPath="BlobName">
+            <ListView Grid.Row="1"
+                ItemsSource="{x:Bind ViewModel.CoffeeVideos}"
+                SelectedItem="{x:Bind ViewModel.SelectedCoffeeVideo,Mode=TwoWay}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment"  Value="Stretch"/>
+                        <Setter Property="Padding"  Value="0"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModel:CoffeeVideoViewModel">
+                        <StackPanel Padding="10 5">
+                            <TextBlock Text="{x:Bind BlobName,Mode=OneWay}" FontWeight="Bold"/>
+                            <TextBlock Text="{x:Bind Title,Mode=OneWay}" FontStyle="Italic" Foreground="#AAAAAA"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
             </ListView>
 
         </Grid>

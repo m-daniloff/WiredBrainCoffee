@@ -19,7 +19,7 @@ namespace WiredBrainCoffee.Storage
 			_connectionString = connectionString;
 		}
 
-		public async Task<CloudBlockBlob> UploadVideoAsync(byte[] videoByteArray, string blobName)
+		public async Task<CloudBlockBlob> UploadVideoAsync(byte[] videoByteArray, string blobName, string title, string description)
 		{
 			var cloudBlobContainer = await GetCoffeeVideosContainerAsync();
 
@@ -27,9 +27,10 @@ namespace WiredBrainCoffee.Storage
 
 			cloudBlockBlob.Properties.ContentType = "video/mp4";
 
-			await cloudBlockBlob.UploadFromByteArrayAsync(videoByteArray, 0, videoByteArray.Length);
-
-			return cloudBlockBlob;
+		    SetMetadata(cloudBlockBlob, _metadataKeyTitle, title);
+		    SetMetadata(cloudBlockBlob, _metadataKeyDescription, description);
+            await cloudBlockBlob.UploadFromByteArrayAsync(videoByteArray, 0, videoByteArray.Length);
+            return cloudBlockBlob;
 		}
 
 		public async Task<bool> CheckIfBlobExistsAsync(string blobName)
@@ -50,7 +51,7 @@ namespace WiredBrainCoffee.Storage
 			do
 			{
 				var blobResultSegment =
-				  await cloudBlobContainer.ListBlobsSegmentedAsync(prefix, token);
+				  await cloudBlobContainer.ListBlobsSegmentedAsync(prefix, true, BlobListingDetails.Metadata, null, token, null, null);
 				token = blobResultSegment.ContinuationToken;
 				cloudBlockBlobs.AddRange(blobResultSegment.Results.OfType<CloudBlockBlob>());
 			}
@@ -69,10 +70,25 @@ namespace WiredBrainCoffee.Storage
 			await cloudBlockBlob.DeleteAsync();
 		}
 
-	    public async Task UpdateMetadataAsync(
-	        CloudBlockBlob cloudBlockBlob, string title, string description)
+	    public async Task UpdateMetadataAsync(CloudBlockBlob cloudBlockBlob, string title, string description)
 	    {
-	        // TODO: Store title and description as metadata on the Blob
+	        SetMetadata(cloudBlockBlob, _metadataKeyTitle, title);
+            SetMetadata(cloudBlockBlob, _metadataKeyDescription, description);
+
+	        await cloudBlockBlob.SetMetadataAsync();
+	    }
+
+	    private static void SetMetadata(CloudBlockBlob cloudBlockBlob, string key, string value)
+	    {
+	        if (string.IsNullOrWhiteSpace(value))
+	        {
+	            if (cloudBlockBlob.Metadata.ContainsKey(key))
+	            {
+	                cloudBlockBlob.Metadata.Remove(key);
+	            }
+	        }
+	        else
+	            cloudBlockBlob.Metadata[key] = value;
 	    }
 
 	    public async Task ReloadMetadataAsync(CloudBlockBlob cloudBlockBlob)

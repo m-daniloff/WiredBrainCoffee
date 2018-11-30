@@ -17,12 +17,17 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Button Margin="0 0 0 10" VerticalAlignment="Bottom"
-                    Content="Select video..." Click="{x:Bind ViewModel.SelectVideoAsync}"/>
+                Content="Select video..." Click="{x:Bind ViewModel.SelectVideoAsync}"/>
         <TextBox Grid.Row="1" Header="Blob name (sample: 2018/10/01/programmingvideo)" Text="{x:Bind ViewModel.BlobNameWithoutExtension,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Text=".mp4" VerticalAlignment="Bottom"/>
+
+        <TextBox Grid.Row="2" Header="Title" Text="{x:Bind  ViewModel.BlobTitle,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="0 20"/>
+        <TextBox Grid.Row="3" Header="Description" Text="{x:Bind ViewModel.BlobDescription,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
     </Grid>
 </ContentDialog>
 

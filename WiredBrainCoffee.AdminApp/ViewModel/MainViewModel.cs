@@ -118,7 +118,9 @@ namespace WiredBrainCoffee.AdminApp.ViewModel
 
 					var cloudBlockBlob = await _coffeeVideoStorage.UploadVideoAsync(
 						dialogData.BlobByteArray,
-						dialogData.BlobName);
+						dialogData.BlobName,
+					    dialogData.BlobTitle,
+					    dialogData.BlobDescription);
 
 					var coffeeVideoViewModel = _coffeeVideoViewModelCreator(cloudBlockBlob);
 					CoffeeVideos.Add(coffeeVideoViewModel);
