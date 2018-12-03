@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿using System;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace WiredBrainCoffee.Storage
 {
-	public class CoffeeVideoStorage : ICoffeeVideoStorage
+    public class CoffeeVideoStorage : ICoffeeVideoStorage
 	{
 		private readonly string _containerNameVideos = "videos";
 		private readonly string _connectionString;
@@ -106,15 +107,25 @@ namespace WiredBrainCoffee.Storage
 	                : "");
 	    }
 
-        private async Task<CloudBlobContainer> GetCoffeeVideosContainerAsync()
+	    public string GetBlobUriWithSasToken(CloudBlockBlob cloudBlockBlob)
+	    {
+	        var sharedAccessBlobPolicy = new SharedAccessBlobPolicy
+	        {
+	            Permissions = SharedAccessBlobPermissions.Read,
+	            SharedAccessExpiryTime = DateTime.Now.AddDays(7)
+	        };
+	        var sasToken = cloudBlockBlob.GetSharedAccessSignature(sharedAccessBlobPolicy);
+	        return cloudBlockBlob.Uri + sasToken;
+	    }
+
+	    private async Task<CloudBlobContainer> GetCoffeeVideosContainerAsync()
 		{
 			var cloudStorageAccount = CloudStorageAccount.Parse(_connectionString);
 
 			var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
 
 			var cloudBlobContainer = cloudBlobClient.GetContainerReference(_containerNameVideos);
-			await cloudBlobContainer.CreateIfNotExistsAsync(
-			  BlobContainerPublicAccessType.Blob, null, null);
+			await cloudBlobContainer.CreateIfNotExistsAsync();
 			return cloudBlobContainer;
 		}
 	}

@@ -37,6 +37,8 @@ namespace WiredBrainCoffee.AdminApp.ViewModel
 
 		public string BlobUri => _cloudBlockBlob.Uri.ToString();
 
+	    public string BlobUriWithSasToken => _coffeeVideoStorage.GetBlobUriWithSasToken(_cloudBlockBlob);
+
 	    public string Title
 	    {
 	        get { return _title; }

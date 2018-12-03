@@ -34,7 +34,7 @@ namespace WiredBrainCoffee.WebApp.Pages
         {
           Title = title,
           Description = description,
-          BlobUri = cloudBlockBlob.Uri.ToString()
+          BlobUri = _coffeeVideoStorage.GetBlobUriWithSasToken(cloudBlockBlob)
         });
       }
 
