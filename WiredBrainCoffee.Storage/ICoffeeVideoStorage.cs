@@ -13,11 +13,19 @@ namespace WiredBrainCoffee.Storage
 		Task<IEnumerable<CloudBlockBlob>> ListVideoBlobsAsync(string prefix = null);
 
 		Task DownloadVideoAsync(CloudBlockBlob cloudBlockBlob, Stream targetStream);
-		Task DeleteVideoAsync(CloudBlockBlob cloudBlockBlob);
 
-        Task UpdateMetadataAsync(CloudBlockBlob cloudBlockBlob, string title, string description);
+        Task OverwriteVideoAsync(CloudBlockBlob cloudBlockBlob, byte[] videoByteArray, string leaseId);
+        Task DeleteVideoAsync(CloudBlockBlob cloudBlockBlob, string leaseId);
+
+        Task UpdateMetadataAsync(CloudBlockBlob cloudBlockBlob, string title, string description, string leaseId);
         Task ReloadMetadataAsync(CloudBlockBlob cloudBlockBlob);
         (string title, string description) GetBlobMetadata(CloudBlockBlob cloudBlockBlob);
         string GetBlobUriWithSasToken(CloudBlockBlob cloudBlockBlob);
+
+        Task<string> AcquireOneMinuteLeaseAsync(CloudBlockBlob cloudBlockBlob);
+        Task RenewLeaseAsync(CloudBlockBlob cloudBlockBlob, string leaseId);
+        Task ReleaseLeaseAsync(CloudBlockBlob cloudBlockBlob, string leaseId);
+
+        Task<string> LoadLeaseInfoAsync(CloudBlockBlob cloudBlockBlob);
     }
 }

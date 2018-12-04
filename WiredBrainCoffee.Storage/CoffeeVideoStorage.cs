@@ -66,17 +66,28 @@ namespace WiredBrainCoffee.Storage
 			await cloudBlockBlob.DownloadToStreamAsync(targetStream);
 		}
 
-		public async Task DeleteVideoAsync(CloudBlockBlob cloudBlockBlob)
+		public async Task DeleteVideoAsync(CloudBlockBlob cloudBlockBlob, string leaseId)
 		{
-			await cloudBlockBlob.DeleteAsync();
+		    var accessCondition = new AccessCondition()
+		    {
+		        IfMatchETag = cloudBlockBlob.Properties.ETag,
+                LeaseId =  leaseId
+		    };
+
+            await cloudBlockBlob.DeleteAsync(DeleteSnapshotsOption.None, accessCondition, null, null);
 		}
 
-	    public async Task UpdateMetadataAsync(CloudBlockBlob cloudBlockBlob, string title, string description)
+	    public async Task UpdateMetadataAsync(CloudBlockBlob cloudBlockBlob, string title, string description, string leaseId)
 	    {
 	        SetMetadata(cloudBlockBlob, _metadataKeyTitle, title);
             SetMetadata(cloudBlockBlob, _metadataKeyDescription, description);
 
-	        await cloudBlockBlob.SetMetadataAsync();
+	        var accessCondition = new AccessCondition()
+	        {
+	            IfMatchETag = cloudBlockBlob.Properties.ETag,
+                LeaseId = leaseId
+	        };
+            await cloudBlockBlob.SetMetadataAsync(accessCondition, null, null);
 	    }
 
 	    private static void SetMetadata(CloudBlockBlob cloudBlockBlob, string key, string value)
@@ -118,7 +129,54 @@ namespace WiredBrainCoffee.Storage
 	        return cloudBlockBlob.Uri + sasToken;
 	    }
 
-	    private async Task<CloudBlobContainer> GetCoffeeVideosContainerAsync()
+	    public async Task<string> AcquireOneMinuteLeaseAsync(CloudBlockBlob cloudBlockBlob)
+	    {
+	        var accessCondition = new AccessCondition
+	        {
+	            IfMatchETag = cloudBlockBlob.Properties.ETag
+	        };
+            return await cloudBlockBlob.AcquireLeaseAsync(TimeSpan.FromMinutes(1), null, accessCondition, null, null);
+	    }
+
+	    public async Task RenewLeaseAsync(CloudBlockBlob cloudBlockBlob, string leaseId)
+	    {
+	        var accessCondition = new AccessCondition
+	        {
+	            LeaseId = leaseId
+	        };
+
+	        await cloudBlockBlob.RenewLeaseAsync(accessCondition);
+	    }
+
+	    public async Task ReleaseLeaseAsync(CloudBlockBlob cloudBlockBlob, string leaseId)
+	    {
+	        var accessCondition = new AccessCondition
+	        {
+	            LeaseId = leaseId
+	        };
+
+	        await cloudBlockBlob.ReleaseLeaseAsync(accessCondition);
+        }
+
+	    public async Task<string> LoadLeaseInfoAsync(CloudBlockBlob cloudBlockBlob)
+	    {
+	        await cloudBlockBlob.FetchAttributesAsync();
+	        return $"Lease state: {cloudBlockBlob.Properties.LeaseState}\n" +
+	               $"Lease satus: {cloudBlockBlob.Properties.LeaseStatus}\n" +
+	               $"Lease duration: {cloudBlockBlob.Properties.LeaseDuration}";
+	    }
+
+	    public async Task OverwriteVideoAsync(CloudBlockBlob cloudBlockBlob, byte[] videoByteArray, string leaseId)
+	    {
+	        var accessCondition = new AccessCondition()
+	        {
+	            IfMatchETag   = cloudBlockBlob.Properties.ETag,
+                LeaseId =  leaseId
+	        };
+	        await cloudBlockBlob.UploadFromByteArrayAsync(videoByteArray, 0, videoByteArray.Length, accessCondition, null, null);
+	    }
+
+        private async Task<CloudBlobContainer> GetCoffeeVideosContainerAsync()
 		{
 			var cloudStorageAccount = CloudStorageAccount.Parse(_connectionString);
 

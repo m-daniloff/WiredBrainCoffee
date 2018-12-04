@@ -7,57 +7,69 @@
     mc:Ignorable="d"
     d:DesignHeight="800"
     d:DesignWidth="600">
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-		    <RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-		<TextBox Text="{x:Bind ViewModel.BlobName,Mode=OneWay}"
+        <TextBox Text="{x:Bind ViewModel.BlobName,Mode=OneWay}"
                Header="Blob name" IsReadOnly="True"
                Margin="10 10 10 0"/>
 
-		<TextBox Text="{x:Bind ViewModel.BlobUri,Mode=OneWay}"
+        <TextBox Text="{x:Bind ViewModel.BlobUri,Mode=OneWay}"
                Header="Blob URI" IsReadOnly="True" 
                Margin="10 5 10 0" Grid.Row="1"/>
 
-		<StackPanel Grid.Row="2" Margin="5" Orientation="Horizontal">
-			<Button Content="Video actions"  Margin="5">
-				<Button.Flyout>
-					<MenuFlyout Placement="Bottom">
-						<MenuFlyoutItem Text="Download video" Icon="Download"
+        <StackPanel Grid.Row="2" Margin="5" Orientation="Horizontal">
+            <Button Content="Video actions"  Margin="5">
+                <Button.Flyout>
+                    <MenuFlyout Placement="Bottom">
+                        <MenuFlyoutItem Text="Download video" Icon="Download"
                             Click="{x:Bind ViewModel.DownloadVideoToFileAsync}"/>
-						<MenuFlyoutItem Text="Delete video" Icon="Delete"
+                        <MenuFlyoutItem Text="Overwrite video" Icon="Upload" 
+                            Click="{x:Bind ViewModel.OverwriteVideoAsync}"/>
+                        <MenuFlyoutItem Text="Delete video" Icon="Delete"
                             Click="{x:Bind ViewModel.DeleteVideoAsync}"/>
-					</MenuFlyout>
-				</Button.Flyout>
-			</Button>
-		</StackPanel>
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+            <Button Content="Lease actions" Margin="5">
+                <Button.Flyout>
+                    <MenuFlyout Placement="Bottom">
+                        <MenuFlyoutItem Text="Acquire lease" Click="{x:Bind ViewModel.AcquireLeaseAsync}" IsEnabled="{x:Bind ViewModel.HasLease.Equals(x:False),Mode=OneWay}"/>
+                        <MenuFlyoutItem Text="Release lease" Click="{x:Bind ViewModel.ReleaseLeaseAsync}" IsEnabled="{x:Bind ViewModel.HasLease,Mode=OneWay}"/>
+                        <MenuFlyoutItem Text="Show lease info" Click="{x:Bind ViewModel.ShowLeaseInfoAsync}"/>
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+        </StackPanel>
 
-		<Border Grid.Row="3" Margin="10 0 10 10" Padding="10" Background="#333333">
+        <Border Grid.Row="3" Margin="10 0" Padding="10" Background="#333333">
             <MediaElement AutoPlay="False" Source="{x:Bind ViewModel.BlobUriWithSasToken,Mode=OneWay}"
                                 AreTransportControlsEnabled="True" IsMuted="True"/>
-		</Border>
-	    <Border Grid.Row="4" Background="LightBlue" Margin="10">
-	        <Grid >
-	            <Grid.ColumnDefinitions>
-	                <ColumnDefinition Width="Auto"/>
-	                <ColumnDefinition/>
-	            </Grid.ColumnDefinitions>
-	            <TextBlock Text="Blob Metadata" Margin="10 5 0 0"/>
-	            <StackPanel VerticalAlignment="Bottom">
-	                <Button Content="Update metadata" IsEnabled="{x:Bind ViewModel.IsMetadataChanged,Mode=OneWay}"
-	                        Click="{x:Bind ViewModel.UpdateMetadataAsync}" Margin="10 10 10 0" HorizontalAlignment="Stretch"/>
-	                <Button Content="Reload metadata" Click="{x:Bind ViewModel.ReloadMetadataAsync}" Margin="10" HorizontalAlignment="Stretch"/>
-	            </StackPanel>
-	            <StackPanel Grid.Column="1">
-	                <TextBox Header="Title" Text="{x:Bind ViewModel.Title,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="0 5 10 0"/>
-	                <TextBox Header="Description" Text="{x:Bind ViewModel.Description,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="0 5 10 10"/>
-	            </StackPanel>
-	        </Grid>
-	    </Border>
+        </Border>
+
+        <Border Grid.Row="4" Background="#333333" Margin="10">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Blob Metadata" Margin="10 5 0 0"/>
+                <StackPanel VerticalAlignment="Bottom">
+                    <Button Content="Update metadata" IsEnabled="{x:Bind ViewModel.IsMetadataChanged,Mode=OneWay}"
+                            Click="{x:Bind ViewModel.UpdateMetadataAsync}" Margin="10 10 10 0" HorizontalAlignment="Stretch"/>
+                    <Button Content="Reload metadata" Click="{x:Bind ViewModel.ReloadMetadataAsync}" Margin="10" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    <TextBox Header="Title" Text="{x:Bind ViewModel.Title,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="0 5 10 0"/>
+                    <TextBox Header="Description" Text="{x:Bind ViewModel.Description,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Margin="0 5 10 10"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>
